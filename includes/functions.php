@@ -23,6 +23,7 @@ use LibreNMS\Util\IPv4;
 use LibreNMS\Util\IPv6;
 use LibreNMS\Util\Proxy;
 
+
 function array_sort_by_column($array, $on, $order = SORT_ASC)
 {
     $new_array = [];
@@ -1706,11 +1707,14 @@ function oxidized_node_update($hostname, $msg, $username = 'not_provided')
     $postdata = ['user' => $username, 'msg' => $msg];
     $oxidized_url = Config::get('oxidized.url');
     if (! empty($oxidized_url)) {
-        Requests::put("$oxidized_url/node/next/$hostname", [], json_encode($postdata), ['proxy' => Proxy::get($oxidized_url)]);
-
-        return true;
+        $response = Http::withOptions([
+            'proxy' => Proxy::get($oxidized_url),
+            'timeout' => 5,
+            ])->put($oxidized_url . "/node/next/" . $hostname, $postdata);
+        if ($response->successful()){
+            return true;
+        }
     }
-
     return false;
 }//end oxidized_node_update()
 
