@@ -33,9 +33,9 @@ class Proxy
      * Check if if the proxy should be used.
      * (it should not be used for connections to localhost)
      */
-    public static function shouldBeUsed(string $target_url): bool
+    public static function AvoidProxy(string $target_url): bool
     {
-        return (bool) preg_match('#//:(localhost|127\.|::1)#', $target_url);
+        return (bool) preg_match('#(?:^|://)(localhost|127.|::1)#', $target_url);
     }
 
     /**
@@ -45,7 +45,7 @@ class Proxy
      */
     public static function get(?string $target_url = null)
     {
-        if ($target_url && ! self::shouldBeUsed($target_url)) {
+        if ($target_url && self::AvoidProxy($target_url)) {
             return false;
         } elseif (getenv('http_proxy')) {
             return getenv('http_proxy');
@@ -75,7 +75,7 @@ class Proxy
      *
      * @return string
      */
-    public static function forCurl(?string $target_url = null): string
+    public static function forCurl(string $target_url): string
     {
         return str_replace(['http://', 'https://'], '', rtrim(self::get($target_url), '/'));
     }
