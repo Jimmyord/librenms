@@ -35,7 +35,7 @@ class Proxy
      */
     public static function AvoidProxy(string $target_url): bool
     {
-        return (bool) preg_match('#(?:^|://)(localhost|127.|::1)#', $target_url);
+        return (bool) preg_match('#(?:^|://)(localhost|127\.|::1)#', $target_url);
     }
 
     /**
@@ -75,7 +75,7 @@ class Proxy
      *
      * @return string
      */
-    public static function forCurl(string $target_url): string
+    public static function forCurl(?string $target_url = null): string
     {
         return str_replace(['http://', 'https://'], '', rtrim(self::get($target_url), '/'));
     }
